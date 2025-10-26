@@ -1,34 +1,24 @@
 package com.example.gestionvacantes.service;
 
 import com.example.gestionvacantes.model.Solicitud;
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.format.DateTimeFormatter;
 
 /**
- * Servicio para envío de correos electrónicos
+ * Servicio para envío de correos electrónicos usando SendGrid
  */
 @Service
 public class EmailService {
 
-    private final JavaMailSender mailSender;
-
-    @Value("${spring.mail.username}")
-    private String fromEmail;
+    @Autowired
+    private SendGridEmailService sendGridEmailService;
 
     @Value("${app.base-url}")
     private String baseUrl;
-
-    // Constructor manual
-    public EmailService(JavaMailSender mailSender) {
-        this.mailSender = mailSender;
-    }
 
     /**
      * Envía email de bienvenida al registrarse
@@ -36,12 +26,7 @@ public class EmailService {
     @Async
     public void enviarEmailBienvenida(String destinatario, String nombre, String tipoUsuario) {
         try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-
-            helper.setFrom(fromEmail);
-            helper.setTo(destinatario);
-            helper.setSubject("¡Bienvenido al Sistema de Vacantes!");
+            String subject = "¡Bienvenido al Sistema de Vacantes!";
 
             String urlDashboard = tipoUsuario.equals("ASPIRANTE") ?
                     baseUrl + "/aspirante/dashboard" :
@@ -82,12 +67,11 @@ public class EmailService {
                 </html>
                 """.formatted(nombre, urlDashboard, baseUrl, baseUrl);
 
-            helper.setText(contenidoHtml, true);
-            mailSender.send(message);
+            sendGridEmailService.sendEmail(destinatario, subject, contenidoHtml);
 
             System.out.println("✅ Email de bienvenida enviado a: " + destinatario);
 
-        } catch (MessagingException e) {
+        } catch (Exception e) {
             System.err.println("❌ Error al enviar email de bienvenida: " + e.getMessage());
         }
     }
@@ -98,12 +82,7 @@ public class EmailService {
     @Async
     public void enviarNotificacionEntrevista(Solicitud solicitud) {
         try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-
-            helper.setFrom(fromEmail);
-            helper.setTo(solicitud.getAspirante().getCorreo());
-            helper.setSubject("🎉 ¡Tienes una entrevista programada!");
+            String subject = "🎉 ¡Tienes una entrevista programada!";
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
             String fechaFormateada = solicitud.getFechaEntrevista().format(formatter);
@@ -165,12 +144,11 @@ public class EmailService {
                     baseUrl
             );
 
-            helper.setText(contenidoHtml, true);
-            mailSender.send(message);
+            sendGridEmailService.sendEmail(solicitud.getAspirante().getCorreo(), subject, contenidoHtml);
 
             System.out.println("✅ Notificación de entrevista enviada a: " + solicitud.getAspirante().getCorreo());
 
-        } catch (MessagingException e) {
+        } catch (Exception e) {
             System.err.println("❌ Error al enviar notificación de entrevista: " + e.getMessage());
             e.printStackTrace();
         }
@@ -182,12 +160,7 @@ public class EmailService {
     @Async
     public void enviarNotificacionNuevaSolicitud(Solicitud solicitud) {
         try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-
-            helper.setFrom(fromEmail);
-            helper.setTo(solicitud.getVacante().getEmpleador().getCorreo());
-            helper.setSubject("Nueva solicitud para tu vacante");
+            String subject = "Nueva solicitud para tu vacante";
 
             String contenidoHtml = """
                 <!DOCTYPE html>
@@ -240,12 +213,11 @@ public class EmailService {
                     solicitud.getVacante().getId()
             );
 
-            helper.setText(contenidoHtml, true);
-            mailSender.send(message);
+            sendGridEmailService.sendEmail(solicitud.getVacante().getEmpleador().getCorreo(), subject, contenidoHtml);
 
             System.out.println("✅ Notificación de nueva solicitud enviada al empleador");
 
-        } catch (MessagingException e) {
+        } catch (Exception e) {
             System.err.println("❌ Error al enviar notificación: " + e.getMessage());
             e.printStackTrace();
         }
