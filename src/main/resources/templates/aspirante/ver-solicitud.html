@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalle de Solicitud</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+        <a class="navbar-brand" href="/aspirante/dashboard"><i class="bi bi-person-workspace"></i> Sistema de Vacantes</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="/aspirante/dashboard"><i class="bi bi-house"></i> Inicio</a></li>
+                <li class="nav-item"><a class="nav-link" href="/aspirante/buscar-vacantes"><i class="bi bi-search"></i> Buscar Vacantes</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/aspirante/mis-solicitudes"><i class="bi bi-file-earmark-text"></i> Mis Solicitudes</a></li>
+                <li class="nav-item"><form method="post" action="/auth/logout"><button type="submit" class="btn btn-link nav-link"><i class="bi bi-box-arrow-right"></i> Salir</button></form></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container my-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h3 th:text="|Detalles de tu solicitud para: ${solicitud.vacante.titulo}|"></h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Información de la Vacante</h5>
+                    <p><strong>Empresa:</strong> <span th:text="${solicitud.vacante.empleador.empresa}"></span></p>
+                    <p><strong>Ubicación:</strong> <span th:text="${solicitud.vacante.ubicacion}"></span></p>
+                </div>
+                <div class="col-md-6">
+                    <h5>Estado de tu Solicitud</h5>
+                    <p><strong>Fecha de aplicación:</strong> <span th:text="${#temporals.format(solicitud.fechaSolicitud, 'dd/MM/yyyy HH:mm')}"></span></p>
+                    <p><strong>Estado:</strong>
+                        <span class="badge" th:text="${solicitud.estado.displayName}"
+                              th:classappend="${solicitud.estado.name() == 'ACEPTADA'} ? 'bg-success' : (${solicitud.estado.name() == 'RECHAZADA'} ? 'bg-danger' : 'bg-warning text-dark')">
+                        </span>
+                    </p>
+                </div>
+            </div>
+
+            <div th:if="${solicitud.fechaEntrevista != null}">
+                <hr>
+                <h4><i class="bi bi-calendar-event"></i> Detalles de la Entrevista</h4>
+
+                <p><strong>Fecha y Hora:</strong> <span th:text="${#temporals.format(solicitud.fechaEntrevista, 'dd/MM/yyyy, HH:mm')} + ' hrs.'"></span></p>
+                <p><strong>Detalles adicionales:</strong></p>
+                <p class="ms-3" th:text="${solicitud.detallesEntrevista}"></p>
+            </div>
+        </div>
+        <div class="card-footer">
+            <a th:href="@{/aspirante/mis-solicitudes}" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Volver a Mis Solicitudes</a>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

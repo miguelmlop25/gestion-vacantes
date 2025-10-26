@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenido al Sistema de Gestión de Vacantes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        /* ===== NUEVO ESTILO CON GRADIENTE VERDE/GRIS ===== */
+        .gradient-bg {
+            background-color: #f8f9fa;
+            background-image: linear-gradient(135deg, #f8f9fa 0%, #e0f2f1 100%);
+        }
+        .feature-icon-shape {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 4rem;
+            height: 4rem;
+            border-radius: .75rem;
+        }
+        .feature-icon {
+            font-size: 2rem;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
+    <div class="container">
+        <a class="navbar-brand fw-bold text-dark" href="#">
+            <i class="bi bi-briefcase-fill text-success"></i>
+            Gestión de Vacantes
+        </a>
+        <a href="/auth/login" class="btn btn-outline-success d-lg-none">
+            <i class="bi bi-box-arrow-in-right"></i> Ingresar
+        </a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a href="/auth/login" class="btn btn-success">
+                        <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="gradient-bg">
+    <div class="container col-xxl-8 px-4" style="padding-top: 120px; padding-bottom: 80px;">
+        <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
+            <div class="col-10 col-sm-8 col-lg-6 mx-auto">
+                <img src="https://cdn.prod.website-files.com/651c199d37c7888693ddd230/67e6f347bb859883f1f057a8_9846833.jpg" class="d-block mx-lg-auto img-fluid rounded-3 shadow-lg" alt="Ilustración de Reclutamiento" loading="lazy">
+            </div>
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold lh-1 text-dark mb-3">Conectando Talento con Oportunidades</h1>
+                <p class="lead text-secondary">
+                    Nuestra plataforma simplifica el proceso de reclutamiento. Encuentra el trabajo de tus sueños o el candidato perfecto para tu empresa.
+                </p>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-start mt-4">
+                    <a href="/auth/registro-aspirante" class="btn btn-success btn-lg px-4 me-md-2">
+                        <i class="bi bi-person-plus"></i> Soy Aspirante
+                    </a>
+                    <a href="/auth/registro-empleador" class="btn btn-outline-secondary btn-lg px-4">
+                        <i class="bi bi-building"></i> Soy Empleador
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container px-4 py-5">
+    <h2 class="pb-2 border-bottom text-center">Una Plataforma Completa</h2>
+    <div class="row g-4 py-5 row-cols-1 row-cols-lg-3">
+        <div class="col d-flex align-items-start">
+            <div class="feature-icon-shape bg-success-subtle text-success-emphasis me-4">
+                <i class="bi bi-search feature-icon"></i>
+            </div>
+            <div>
+                <h3 class="fs-4">Búsqueda Inteligente</h3>
+                <p>Filtra por ubicación, tipo de trabajo y palabras clave para encontrar la oportunidad perfecta.</p>
+            </div>
+        </div>
+        <div class="col d-flex align-items-start">
+            <div class="feature-icon-shape bg-success-subtle text-success-emphasis me-4">
+                <i class="bi bi-file-earmark-person feature-icon"></i>
+            </div>
+            <div>
+                <h3 class="fs-4">Aplicación Sencilla</h3>
+                <p>Sube tu CV una sola vez y aplica a las vacantes que te interesen con un solo clic.</p>
+            </div>
+        </div>
+        <div class="col d-flex align-items-start">
+            <div class="feature-icon-shape bg-success-subtle text-success-emphasis me-4">
+                <i class="bi bi-calendar-check feature-icon"></i>
+            </div>
+            <div>
+                <h3 class="fs-4">Seguimiento Fácil</h3>
+                <p>Recibe notificaciones por email y gestiona el estado de tus entrevistas desde tu dashboard.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="bg-light">
+    <div class="container px-4 py-5 text-center">
+        <h2 class="display-5 fw-bold text-dark">¿Listo para comenzar?</h2>
+        <div class="col-lg-6 mx-auto">
+            <p class="lead mb-4 text-secondary">Únete a nuestra comunidad de profesionales y empresas líderes. Tu próximo paso profesional está a un clic de distancia.</p>
+            <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                <a href="/auth/login" class="btn btn-success btn-lg px-4">
+                    <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="py-3 my-4">
+    <div class="container">
+        <p class="text-center text-muted border-top pt-3">
+            &copy; 2025 Sistema de Gestión de Vacantes. Todos los derechos reservados.
+        </p>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

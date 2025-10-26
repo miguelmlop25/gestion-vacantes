@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Vacante</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-secondary">
+    <div class="container">
+        <a class="navbar-brand" href="/empleador/dashboard"><i class="bi bi-building"></i> Sistema de Vacantes - Empleador</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="/empleador/dashboard"><i class="bi bi-house"></i> Inicio</a></li>
+                <li class="nav-item"><a class="nav-link" href="/empleador/publicar-vacante"><i class="bi bi-plus-circle"></i> Publicar Vacante</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/empleador/mis-vacantes"><i class="bi bi-list-ul"></i> Mis Vacantes</a></li>
+                <li class="nav-item"><form method="post" action="/auth/logout"><button type="submit" class="btn btn-link nav-link"><i class="bi bi-box-arrow-right"></i> Salir</button></form></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class.card-header>
+                    <h4><i class="bi bi-pencil-fill"></i> Editar Vacante</h4>
+                </div>
+                <div class="card-body">
+
+                    <form method="post" th:action="@{/empleador/vacante/actualizar}" th:object="${vacante}">
+                        <input type="hidden" th:field="*{id}" />
+
+                        <div class="mb-3">
+                            <label for="titulo" class="form-label">Título del Puesto *</label>
+                            <input type="text" class="form-control" id="titulo" th:field="*{titulo}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="descripcion" class="form-label">Descripción *</label>
+                            <textarea class="form-control" id="descripcion" th:field="*{descripcion}" rows="5" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="requisitos" class="form-label">Requisitos</label>
+                            <textarea class="form-control" id="requisitos" th:field="*{requisitos}" rows="4"></textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="ubicacion" class="form-label">Ubicación *</label>
+                                <input type="text" class="form-control" id="ubicacion" th:field="*{ubicacion}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="tipoTrabajo" class="form-label">Tipo de Trabajo *</label>
+                                <select class="form-select" id="tipoTrabajo" th:field="*{tipoTrabajo}" required>
+                                    <option th:each="tipo : ${tiposTrabajo}" th:value="${tipo}" th:text="${tipo.displayName}"></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="salario" class="form-label">Salario</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" id="salario" th:field="*{salario}" step="0.01">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="estado" class="form-label">Estado de la Vacante *</label>
+                                <select class="form-select" id="estado" th:field="*{estado}" required>
+                                    <option th:each="est : ${estadosVacante}" th:value="${est}" th:text="${est.displayName}"></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <hr>
+                        <div class="d-flex justify-content-between">
+                            <a th:href="@{/empleador/vacante/eliminar/{id}(id=${vacante.id})}" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que deseas eliminar esta vacante? Esta acción no se puede deshacer.');">
+                                <i class="bi bi-trash"></i> Eliminar
+                            </a>
+                            <div>
+                                <a href="/empleador/mis-vacantes" class="btn btn-outline-secondary">
+                                    <i class="bi bi-x-circle"></i> Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-success">
+                                    <i class="bi bi-save"></i> Guardar Cambios
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

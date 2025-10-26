@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidatos - Sistema de Vacantes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-secondary">
+    <div class="container">
+        <a class="navbar-brand" href="/empleador/dashboard">
+            <i class="bi bi-building"></i> Sistema de Vacantes - Empleador
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/empleador/dashboard">
+                        <i class="bi bi-house"></i> Inicio
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/empleador/mis-vacantes">
+                        <i class="bi bi-list-ul"></i> Mis Vacantes
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <form method="post" action="/auth/logout" class="d-inline">
+                        <button type="submit" class="btn btn-link nav-link">
+                            <i class="bi bi-box-arrow-right"></i> Salir
+                        </button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Contenido -->
+<div class="container my-5">
+    <!-- Información de la Vacante -->
+    <div class="card mb-4 shadow">
+        <div class="card-header bg-secondary text-white">
+            <h3 class="mb-0" th:text="${vacante.titulo}"></h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong><i class="bi bi-geo-alt"></i> Ubicación:</strong> <span th:text="${vacante.ubicacion}"></span></p>
+                    <p><strong><i class="bi bi-briefcase"></i> Tipo:</strong> <span th:text="${vacante.tipoTrabajo.displayName}"></span></p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong><i class="bi bi-calendar"></i> Publicada:</strong> <span th:text="${#temporals.format(vacante.fechaPublicacion, 'dd/MM/yyyy')}"></span></p>
+                    <p><strong><i class="bi bi-people"></i> Candidatos:</strong> <span th:text="${#lists.size(solicitudes)}">0</span></p>
+                </div>
+            </div>
+            <a th:href="@{/empleador/mis-vacantes}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Volver a Mis Vacantes
+            </a>
+        </div>
+    </div>
+
+    <!-- Mensajes -->
+    <div class="alert alert-success alert-dismissible fade show" th:if="${mensaje}">
+        <i class="bi bi-check-circle"></i> <span th:text="${mensaje}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div class="alert alert-danger alert-dismissible fade show" th:if="${error}">
+        <i class="bi bi-exclamation-triangle"></i> <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Lista de Candidatos -->
+    <h2 class="mb-4">
+        <i class="bi bi-people-fill"></i> Candidatos
+    </h2>
+
+    <div th:if="${#lists.isEmpty(solicitudes)}" class="text-center py-5">
+        <i class="bi bi-inbox" style="font-size: 5rem; color: #ccc;"></i>
+        <h4 class="mt-3">No hay candidatos aún</h4>
+        <p class="text-muted">Los aspirantes que apliquen a esta vacante aparecerán aquí</p>
+    </div>
+
+    <div class="row" th:if="${!#lists.isEmpty(solicitudes)}">
+        <div class="col-12 mb-3" th:each="solicitud : ${solicitudes}">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h5 class="card-title">
+                                <i class="bi bi-person-circle"></i> <span th:text="${solicitud.aspirante.nombre}"></span>
+                            </h5>
+                            <p class="mb-2">
+                                <strong><i class="bi bi-envelope"></i> Correo:</strong>
+                                <span th:text="${solicitud.aspirante.correo}"></span>
+                            </p>
+                            <p class="mb-2" th:if="${solicitud.aspirante.habilidades != null}">
+                                <strong><i class="bi bi-gear"></i> Habilidades:</strong><br>
+                                <span th:text="${solicitud.aspirante.habilidades}"></span>
+                            </p>
+                            <p class="mb-2">
+                                <small class="text-muted">
+                                    <i class="bi bi-calendar"></i>
+                                    Aplicó el <span th:text="${#temporals.format(solicitud.fechaSolicitud, 'dd/MM/yyyy HH:mm')}"></span>
+                                </small>
+                            </p>
+
+                            <!-- Estado -->
+                            <span class="badge"
+                                  th:classappend="${solicitud.estado.name() == 'PENDIENTE'} ? 'bg-warning text-dark' :
+                                                     (${solicitud.estado.name() == 'REVISADA'} ? 'bg-info' :
+                                                     (${solicitud.estado.name() == 'ACEPTADA'} ? 'bg-success' :
+                                                     (${solicitud.estado.name() == 'RECHAZADA'} ? 'bg-danger' : 'bg-secondary')))"
+                                  th:text="${solicitud.estado.displayName}">
+                                </span>
+
+                            <!-- Entrevista programada -->
+                            <div th:if="${solicitud.fechaEntrevista != null}" class="alert alert-info mt-3 mb-0">
+                                <strong><i class="bi bi-calendar-check"></i> Entrevista programada:</strong><br>
+                                <span th:text="${#temporals.format(solicitud.fechaEntrevista, 'dd/MM/yyyy HH:mm')}"></span><br>
+                                <small th:text="${solicitud.detallesEntrevista}"></small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-grid gap-2">
+                                <!-- Descargar CV -->
+                                <a th:href="@{/empleador/descargar-cv/{id}(id=${solicitud.id})}"
+                                   class="btn btn-primary btn-sm" target="_blank">
+                                    <i class="bi bi-file-earmark-pdf"></i> Descargar CV
+                                </a>
+
+                                <!-- Marcar como Revisada -->
+                                <form th:action="@{/empleador/marcar-revisada/{id}(id=${solicitud.id})}"
+                                      method="post"
+                                      th:if="${solicitud.estado.name() == 'PENDIENTE'}">
+                                    <button type="submit" class="btn btn-info btn-sm w-100">
+                                        <i class="bi bi-eye-fill"></i> Marcar como Revisada
+                                    </button>
+                                </form>
+
+                                <!-- Programar Entrevista -->
+                                <button type="button" class="btn btn-success btn-sm"
+                                        data-bs-toggle="modal"
+                                        th:attr="data-bs-target='#modalEntrevista' + ${solicitud.id}"
+                                        th:if="${solicitud.estado.name() != 'RECHAZADA'}">
+                                    <i class="bi bi-calendar-plus"></i> Programar Entrevista
+                                </button>
+
+                                <!-- Rechazar -->
+                                <button type="button" class="btn btn-danger btn-sm"
+                                        data-bs-toggle="modal"
+                                        th:attr="data-bs-target='#modalRechazar' + ${solicitud.id}"
+                                        th:if="${solicitud.estado.name() == 'PENDIENTE' or solicitud.estado.name() == 'REVISADA'}">
+                                    <i class="bi bi-x-circle"></i> Rechazar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Programar Entrevista -->
+            <div class="modal fade" th:id="'modalEntrevista' + ${solicitud.id}" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-success text-white">
+                            <h5 class="modal-title">
+                                <i class="bi bi-calendar-plus"></i> Programar Entrevista
+                            </h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <form th:action="@{/empleador/programar-entrevista/{id}(id=${solicitud.id})}" method="post">
+                            <div class="modal-body">
+                                <p><strong>Candidato:</strong> <span th:text="${solicitud.aspirante.nombre}"></span></p>
+                                <div class="mb-3">
+                                    <label for="fechaHora" class="form-label">Fecha y Hora *</label>
+                                    <input type="datetime-local" class="form-control"
+                                           th:id="'fechaHora' + ${solicitud.id}"
+                                           name="fechaHora" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="detalles" class="form-label">Detalles de la Entrevista *</label>
+                                    <textarea class="form-control"
+                                              th:id="'detalles' + ${solicitud.id}"
+                                              name="detalles" rows="4"
+                                              placeholder="Ubicación, modalidad (presencial/virtual), enlace de videollamada, etc."
+                                              required></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-success">
+                                    <i class="bi bi-check-lg"></i> Programar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Rechazar -->
+            <div class="modal fade" th:id="'modalRechazar' + ${solicitud.id}" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-danger text-white">
+                            <h5 class="modal-title">
+                                <i class="bi bi-x-circle"></i> Rechazar Solicitud
+                            </h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <form th:action="@{/empleador/rechazar-solicitud/{id}(id=${solicitud.id})}" method="post">
+                            <div class="modal-body">
+                                <p><strong>Candidato:</strong> <span th:text="${solicitud.aspirante.nombre}"></span></p>
+                                <div class="mb-3">
+                                    <label for="motivo" class="form-label">Motivo (Opcional)</label>
+                                    <textarea class="form-control"
+                                              th:id="'motivo' + ${solicitud.id}"
+                                              name="motivo" rows="3"
+                                              placeholder="Razón del rechazo..."></textarea>
+                                </div>
+                                <div class="alert alert-warning">
+                                    <i class="bi bi-exclamation-triangle"></i>
+                                    Esta acción no se puede deshacer
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="bi bi-x-lg"></i> Rechazar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

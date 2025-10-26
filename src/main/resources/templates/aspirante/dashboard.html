@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Mi Dashboard - Aspirante</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+        <a class="navbar-brand" href="/aspirante/dashboard"><i class="bi bi-person-workspace"></i> Sistema de Vacantes</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link active" href="/aspirante/dashboard"><i class="bi bi-house"></i> Inicio</a></li>
+                <li class="nav-item"><a class="nav-link" href="/aspirante/buscar-vacantes"><i class="bi bi-search"></i> Buscar Vacantes</a></li>
+                <li class="nav-item"><a class="nav-link" href="/aspirante/mis-solicitudes"><i class="bi bi-file-earmark-text"></i> Mis Solicitudes</a></li>
+                <li class="nav-item"><form method="post" action="/auth/logout"><button type="submit" class="btn btn-link nav-link"><i class="bi bi-box-arrow-right"></i> Salir</button></form></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container my-5">
+    <div class="alert alert-info" role="alert">
+        <h4 class="alert-heading" th:text="|¡Bienvenido, ${aspirante.nombre}!|"></h4>
+        <p>Aquí puedes ver el resumen de tu actividad en el sistema.</p>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="card text-center text-white bg-primary shadow-sm">
+                <div class="card-body">
+                    <h1 class="display-4" th:text="${solicitudesPendientes}">0</h1>
+                    <p class="card-text">Solicitudes Pendientes</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center text-white bg-success shadow-sm">
+                <div class="card-body">
+                    <h1 class="display-4" th:text="${entrevistasPendientes}">0</h1>
+                    <p class="card-text">Entrevistas Programadas</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center text-white bg-secondary shadow-sm">
+                <div class="card-body">
+                    <h1 class="display-4" th:text="${#lists.size(ultimasSolicitudes)}">0</h1>
+                    <p class="card-text">Total de Solicitudes</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row g-4 mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h4><i class="bi bi-person-lines-fill"></i> Mi Perfil</h4>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Habilidades y Experiencia</h5>
+                    <p class="card-text" th:text="${aspirante.habilidades ?: 'Aún no has añadido tus habilidades y experiencia.'}"></p>
+                    <a th:href="@{/aspirante/perfil/editar}" class="btn btn-secondary"><i class="bi bi-pencil"></i> Editar Perfil</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row g-4 mb-5">
+        <div class="col-md-6">
+            <div class="card text-center shadow-sm h-100">
+                <div class="card-body">
+                    <i class="bi bi-search display-4 text-primary"></i>
+                    <h5 class="card-title mt-3">Buscar Vacantes</h5>
+                    <p class="card-text">Encuentra oportunidades que se ajusten a tu perfil.</p>
+                    <a href="/aspirante/buscar-vacantes" class="btn btn-primary">Buscar</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card text-center shadow-sm h-100">
+                <div class="card-body">
+                    <i class="bi bi-file-earmark-text display-4 text-success"></i>
+                    <h5 class="card-title mt-3">Mis Solicitudes</h5>
+                    <p class="card-text">Revisa el estado de tus aplicaciones.</p>
+                    <a href="/aspirante/mis-solicitudes" class="btn btn-success">Ver Solicitudes</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <h4><i class="bi bi-clock-history"></i> Últimas Solicitudes</h4>
+        </div>
+        <div class="card-body">
+            <div th:if="${#lists.isEmpty(ultimasSolicitudes)}" class="alert alert-light">No tienes solicitudes recientes.</div>
+            <div th:unless="${#lists.isEmpty(ultimasSolicitudes)}" class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                    <tr>
+                        <th>Vacante</th>
+                        <th>Empresa</th>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="solicitud : ${ultimasSolicitudes}">
+                        <td th:text="${solicitud.vacante.titulo}"></td>
+                        <td th:text="${solicitud.vacante.empleador.empresa}"></td>
+                        <td th:text="${#temporals.format(solicitud.fechaSolicitud, 'dd/MM/yyyy')}"></td>
+                        <td><span class="badge" th:text="${solicitud.estado.displayName}" th:classappend="${solicitud.estado.name() == 'ACEPTADA'} ? 'bg-success' : 'bg-warning text-dark'"></span></td>
+                        <td><a th:href="@{/aspirante/solicitud/{id}(id=${solicitud.id})}" class="btn btn-sm btn-outline-primary">Ver</a></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

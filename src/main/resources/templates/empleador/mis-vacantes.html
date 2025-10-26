@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Mis Vacantes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-secondary">
+    <div class="container">
+        <a class="navbar-brand" href="/empleador/dashboard"><i class="bi bi-building"></i> Sistema de Vacantes - Empleador</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="/empleador/dashboard"><i class="bi bi-house"></i> Inicio</a></li>
+                <li class="nav-item"><a class="nav-link" href="/empleador/publicar-vacante"><i class="bi bi-plus-circle"></i> Publicar Vacante</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/empleador/mis-vacantes"><i class="bi bi-list-ul"></i> Mis Vacantes</a></li>
+                <li class="nav-item"><form method="post" action="/auth/logout"><button type="submit" class="btn btn-link nav-link"><i class="bi bi-box-arrow-right"></i> Salir</button></form></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-list-ul"></i> Mis Vacantes</h2>
+        <a href="/empleador/publicar-vacante" class="btn btn-success"><i class="bi bi-plus-lg"></i> Nueva Vacante</a>
+    </div>
+
+    <div th:if="${mensaje}" class="alert alert-success" th:text="${mensaje}"></div>
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+    <div th:if="${#lists.isEmpty(vacantes)}" class="alert alert-info">
+        Aún no has publicado ninguna vacante.
+    </div>
+
+    <div class="row g-4">
+        <div th:each="vacante : ${vacantes}" class="col-md-6">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <h5 class="card-title" th:text="${vacante.titulo}"></h5>
+                        <span class="badge"
+                              th:text="${vacante.estado.displayName}"
+                              th:classappend="${vacante.estado.name() == 'PUBLICADA'} ? 'bg-success' : 'bg-danger'">
+                        </span>
+                    </div>
+                    <p class="card-text text-muted" th:text="${vacante.descripcion}"></p>
+
+                    <!-- SECCIÓN DE REQUISITOS -->
+                    <div th:if="${vacante.requisitos != null and !#strings.isEmpty(vacante.requisitos)}" class="requisitos-box">
+                        <h6><i class="bi bi-clipboard-check"></i> Requisitos:</h6>
+                        <p th:text="${vacante.requisitos}"></p>
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-2 mb-3">
+                        <span class="badge bg-primary"><i class="bi bi-geo-alt-fill"></i> <span th:text="${vacante.ubicacion}"></span></span>
+                        <span class="badge bg-info"><i class="bi bi-briefcase-fill"></i> <span th:text="${vacante.tipoTrabajo.displayName}"></span></span>
+
+                        <span th:if="${vacante.salario != null}" class="badge bg-warning text-dark">
+                            <i class="bi bi-cash-coin"></i> Salario: <span th:text="${#numbers.formatCurrency(vacante.salario)}"></span>
+                        </span>
+                    </div>
+
+                    <small class="text-muted d-block mb-3">
+                        <i class="bi bi-calendar-check"></i> Publicada: <span th:text="${#temporals.format(vacante.fechaPublicacion, 'dd/MM/yyyy')}"></span>
+                    </small>
+                </div>
+                <div class="card-footer bg-light d-flex justify-content-between">
+                    <a th:href="@{/empleador/ver-interesados/{id}(id=${vacante.id})}" class="btn btn-primary btn-sm">
+                        <i class="bi bi-people-fill"></i> Ver Candidatos (<span th:text="${#lists.size(vacante.solicitudes)}"></span>)
+                    </a>
+                    <div>
+                        <a th:href="@{/empleador/vacante/{id}(id=${vacante.id})}" class="btn btn-outline-secondary btn-sm">
+                            <i class="bi bi-pencil"></i> Editar
+                        </a>
+                        <form th:if="${vacante.estado.name() == 'PUBLICADA'}" th:action="@{/empleador/vacante/{id}/cerrar(id=${vacante.id})}" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-outline-danger btn-sm"><i class="bi bi-x-circle"></i> Cerrar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
