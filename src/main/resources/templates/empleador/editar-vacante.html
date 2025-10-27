@@ -10,12 +10,28 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-secondary">
     <div class="container">
         <a class="navbar-brand" href="/empleador/dashboard"><i class="bi bi-building"></i> Sistema de Vacantes - Empleador</a>
-        <div class="collapse navbar-collapse">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item"><a class="nav-link" href="/empleador/dashboard"><i class="bi bi-house"></i> Inicio</a></li>
                 <li class="nav-item"><a class="nav-link" href="/empleador/publicar-vacante"><i class="bi bi-plus-circle"></i> Publicar Vacante</a></li>
                 <li class="nav-item"><a class="nav-link active" href="/empleador/mis-vacantes"><i class="bi bi-list-ul"></i> Mis Vacantes</a></li>
-                <li class="nav-item"><form method="post" action="/auth/logout"><button type="submit" class="btn btn-link nav-link"><i class="bi bi-box-arrow-right"></i> Salir</button></form></li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-person-circle"></i> <span th:text="${empleador.empresa}">Empleador</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        <li>
+                            <form method="post" action="/auth/logout" style="margin: 0;">
+                                <button type="submit" class="dropdown-item">
+                                    <i class="bi bi-box-arrow-right"></i> Salir
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </li>
             </ul>
         </div>
     </div>

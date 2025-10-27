@@ -62,7 +62,9 @@ public class EmpleadorController {
     }
 
     @GetMapping("/publicar-vacante")
-    public String mostrarFormularioPublicar(Model model) {
+    public String mostrarFormularioPublicar(Authentication authentication, Model model) {
+        Empleador empleador = obtenerEmpleadorAutenticado(authentication);
+        model.addAttribute("empleador", empleador);
         model.addAttribute("vacante", new Vacante());
         model.addAttribute("tiposTrabajo", TipoTrabajo.values());
         return "empleador/publicar-vacante";
@@ -93,6 +95,7 @@ public class EmpleadorController {
     public String misVacantes(Authentication authentication, Model model) {
         Empleador empleador = obtenerEmpleadorAutenticado(authentication);
         List<Vacante> vacantes = vacanteService.obtenerVacantesPorEmpleador(empleador.getId());
+        model.addAttribute("empleador", empleador);
         model.addAttribute("vacantes", vacantes);
         return "empleador/mis-vacantes";
     }
@@ -106,6 +109,7 @@ public class EmpleadorController {
                 redirectAttributes.addFlashAttribute("error", "No tienes permiso para ver esta vacante");
                 return "redirect:/empleador/mis-vacantes";
             }
+            model.addAttribute("empleador", empleador);
             model.addAttribute("vacante", vacante);
             model.addAttribute("tiposTrabajo", TipoTrabajo.values());
             model.addAttribute("estadosVacante", EstadoVacante.values());
@@ -198,6 +202,7 @@ public class EmpleadorController {
                 return "redirect:/empleador/mis-vacantes";
             }
             List<Solicitud> solicitudes = solicitudService.obtenerSolicitudesPorVacante(vacanteId);
+            model.addAttribute("empleador", empleador);
             model.addAttribute("vacante", vacante);
             model.addAttribute("solicitudes", solicitudes);
             return "empleador/ver-interesados";

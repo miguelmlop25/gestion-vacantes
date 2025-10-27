@@ -57,7 +57,10 @@ public class AspiranteController {
     public String buscarVacantes(@RequestParam(required = false) String ubicacion,
                                  @RequestParam(required = false) TipoTrabajo tipoTrabajo,
                                  @RequestParam(required = false) String keyword,
+                                 Authentication authentication,
                                  Model model) {
+        Aspirante aspirante = obtenerAspiranteAutenticado(authentication);
+        model.addAttribute("aspirante", aspirante);
         List<Vacante> vacantes = vacanteService.buscarVacantes(ubicacion, tipoTrabajo, keyword);
         model.addAttribute("vacantes", vacantes);
         model.addAttribute("ubicacion", ubicacion);
@@ -82,6 +85,7 @@ public class AspiranteController {
         // Lógica corregida: verificar si existe una solicitud para ESTE aspirante y ESTA vacante
         boolean yaAplico = solicitudService.yaAplico(aspirante.getId(), vacante.getId());
 
+        model.addAttribute("aspirante", aspirante);
         model.addAttribute("vacante", vacante);
         model.addAttribute("yaAplico", yaAplico);
 
@@ -123,6 +127,7 @@ public class AspiranteController {
     public String misSolicitudes(Authentication authentication, Model model) {
         Aspirante aspirante = obtenerAspiranteAutenticado(authentication);
         List<Solicitud> solicitudes = solicitudService.obtenerSolicitudesPorAspirante(aspirante.getId());
+        model.addAttribute("aspirante", aspirante);
         model.addAttribute("solicitudes", solicitudes);
         return "aspirante/mis-solicitudes";
     }
@@ -139,6 +144,7 @@ public class AspiranteController {
             redirectAttributes.addFlashAttribute("error", "No tienes permiso para ver esta solicitud");
             return "redirect:/aspirante/mis-solicitudes";
         }
+        model.addAttribute("aspirante", aspirante);
         model.addAttribute("solicitud", solicitud);
         return "aspirante/ver-solicitud";
     }
